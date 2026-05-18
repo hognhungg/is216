@@ -134,8 +134,19 @@ CREATE TABLE HOADON (
     TongTien NUMBER,
     MaBB NUMBER,
     MaKM NUMBER,
+    CONSTRAINT FK_HDON_HD FOREIGN KEY (MaPhieuThue) REFERENCES HOPDONG(MaHopDong),
     CONSTRAINT FK_HDON_BB FOREIGN KEY (MaBB) REFERENCES BIENBAN(MaBienBan),
     CONSTRAINT FK_HDON_KM FOREIGN KEY (MaKM) REFERENCES KHUYENMAI(MaKM)
+);
+
+CREATE SEQUENCE SEQ_HOADON START WITH 1 INCREMENT BY 1 NOCACHE NOCYCLE;
+
+CREATE TABLE DANHGIA (
+    MaDG NUMBER PRIMARY KEY,
+    MaPhieuThue NUMBER NOT NULL,
+    DiemSo NUMBER CHECK (DiemSo BETWEEN 1 AND 5),
+    NoiDung VARCHAR2(1000),
+    CONSTRAINT FK_DG_PHIEUTHUE FOREIGN KEY (MaPhieuThue) REFERENCES HOPDONG(MaHopDong)
 );
 
 CREATE TABLE THANHTOAN (
@@ -387,8 +398,8 @@ BEGIN
     v_tong_tien := v_tien_thue_goc - v_so_tien_giam;
 
     -- Thêm bản ghi mới vào bảng HOADON
-    INSERT INTO HOADON (NgHD, TienThueGoc, PhiPhatSinh, SoTienGiam, TrangThaiHD, TongTien, MaBB, MaKM)
-    VALUES (SYSDATE, v_tien_thue_goc, 0, v_so_tien_giam, 'Chua thanh toan', v_tong_tien, i_ma_bb, i_ma_km)
+    INSERT INTO HOADON (MaHD, MaPhieuThue, NgayThanhToan, TienThueGoc, PhiPhatSinh, SoTienGiam, TrangThaiHD, MaBB, MaKM)
+    VALUES (SEQ_HOADON.NEXTVAL, v_ma_hd_thue, SYSDATE, v_tien_thue_goc, 0, v_so_tien_giam, 'Chua thanh toan', i_ma_bb, i_ma_km)
     RETURNING MaHD INTO o_ma_hd_out;
 
     -- Cập nhật trạng thái xe thành “Sẵn sàng” sau khi đã hoàn tất biên bản trả và lập hóa đơn
@@ -403,6 +414,63 @@ EXCEPTION
     WHEN OTHERS THEN
         ROLLBACK;
         RAISE_APPLICATION_ERROR(-20008, 'Loi lap hoa don: ' || SQLERRM);
+END;
+/
+
+CREATE OR REPLACE PROCEDURE PROC_TRA_XE (
+    p_MaPhieu      IN HOPDONG.MaHopDong%TYPE,
+    p_NgayTra      IN DATE,
+    p_PhiPhatSinh  IN NUMBER
+) IS
+    v_bien_so_xe     XE.BienSoXe%TYPE;
+    v_ngay_nhan      DATE;
+    v_gia_thue_ngay  LOAIXE.GiaThueNgay%TYPE;
+    v_so_ngay_thue   NUMBER;
+    v_tien_thue_goc  NUMBER;
+    v_tong_tien      NUMBER;
+    v_ma_hd          HOADON.MaHD%TYPE;
+BEGIN
+    SELECT hd.ThoiGianNhanXe, x.BienSoXe, lx.GiaThueNgay
+    INTO v_ngay_nhan, v_bien_so_xe, v_gia_thue_ngay
+    FROM HOPDONG hd
+    JOIN CT_HOPDONG_XE ct ON hd.MaHopDong = ct.MaHopDong
+    JOIN XE x ON ct.BienSoXe = x.BienSoXe
+    JOIN LOAIXE lx ON x.MaLoaiXe = lx.MaLoaiXe
+    WHERE hd.MaHopDong = p_MaPhieu;
+
+    IF p_NgayTra <= v_ngay_nhan THEN
+        RAISE_APPLICATION_ERROR(-20015, 'Ngay tra phai sau ngay nhan xe.');
+    END IF;
+
+    v_so_ngay_thue := CEIL(p_NgayTra - v_ngay_nhan);
+    IF v_so_ngay_thue < 1 THEN
+        v_so_ngay_thue := 1;
+    END IF;
+
+    v_tien_thue_goc := v_so_ngay_thue * v_gia_thue_ngay;
+    v_tong_tien := v_tien_thue_goc + NVL(p_PhiPhatSinh, 0);
+
+    UPDATE XE
+    SET TrangThai = 'Trống'
+    WHERE BienSoXe = v_bien_so_xe;
+
+    UPDATE HOPDONG
+    SET ThoiGianTraXe = p_NgayTra,
+        TrangThaiHopDong = 'Da tra'
+    WHERE MaHopDong = p_MaPhieu;
+
+    INSERT INTO HOADON (MaHD, MaPhieuThue, NgayThanhToan, TienThueGoc, PhiPhatSinh, SoTienGiam, TrangThaiHD, MaBB, MaKM)
+    VALUES (SEQ_HOADON.NEXTVAL, p_MaPhieu, SYSDATE, v_tien_thue_goc, NVL(p_PhiPhatSinh, 0), 0, 'Chua thanh toan', NULL, NULL)
+    RETURNING MaHD INTO v_ma_hd;
+
+    COMMIT;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20016, 'Khong tim thay phieu thue: ' || p_MaPhieu);
+    WHEN OTHERS THEN
+        ROLLBACK;
+        RAISE_APPLICATION_ERROR(-20017, 'Loi PROC_TRA_XE: ' || SQLERRM);
 END;
 /
 

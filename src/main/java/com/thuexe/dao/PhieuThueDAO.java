@@ -1,11 +1,17 @@
 package com.thuexe.dao;
 
-import com.thuexe.dto.PhieuThueDTO;
-import com.thuexe.util.DBConnection;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.thuexe.dto.PhieuThueDTO;
+import com.thuexe.util.DBConnection;
 
 public class PhieuThueDAO {
 
@@ -67,7 +73,6 @@ public class PhieuThueDAO {
         return 0;
     }
 
-    // ===== 4. TẠO PHIẾU THUÊ (ORACLE - GIỐNG SQL SERVER) =====
     public String themPhieuThue(PhieuThueDTO phieu) {
         String sql = "{call Create_Rental_Contract(?, ?, ?, ?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
