@@ -60,7 +60,7 @@ public class PhieuThueDAO {
         return list;
     }
 
-    // ===== 3. LẤY ĐƠN GIÁ ) =
+    // ===== 3. LẤY ĐƠN GIÁ =====
     public double layDonGiaNgay(String bienSoXe) {
         String sql = "SELECT l.GiaThueNgay FROM XE x JOIN LOAIXE l ON x.MaLoaiXe = l.MaLoaiXe WHERE x.BienSoXe = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -73,6 +73,7 @@ public class PhieuThueDAO {
         return 0;
     }
 
+    // ===== 4. THÊM PHIẾU THUÊ =====
     public String themPhieuThue(PhieuThueDTO phieu) {
         String sql = "{call Create_Rental_Contract(?, ?, ?, ?, ?, ?)}";
         try (Connection conn = DBConnection.getConnection();
@@ -90,6 +91,39 @@ public class PhieuThueDAO {
         } catch (SQLException e) { 
             e.printStackTrace(); 
             return null;
+        }
+    }
+
+    // ===== 5. CẬP NHẬT/SỬA PHIẾU THUÊ (HÀM BỔ SUNG MỚI) =====
+    public boolean capNhatPhieuThue(PhieuThueDTO p, String maHopDong) throws SQLException {
+        String sql = "UPDATE HOPDONGTHUEXE SET MaKhachHang = ?, BienSoXe = ?, NgayNhan = ?, NgayTra = ?, " +
+                     "DiaDiemNhan = ?, DiaDiemTra = ?, TongTienTamTinh = ? WHERE MaHopDong = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, Integer.parseInt(p.getMaKhachHang()));
+            ps.setString(2, p.getBienSoXe());
+            ps.setDate(3, new java.sql.Date(p.getThoiGianNhanXe().getTime()));
+            ps.setDate(4, new java.sql.Date(p.getThoiGianTraXe().getTime()));
+            ps.setString(5, p.getDiaDiemNhanXe());
+            ps.setString(6, p.getDiaDiemTraXe());
+            ps.setDouble(7, p.getTienTamTinh());
+            ps.setInt(8, Integer.parseInt(maHopDong)); // Ép kiểu về số nguyên để khớp với DB
+            
+            return ps.executeUpdate() > 0;
+        }
+    }
+
+    // ===== 6. HỦY/XÓA PHIẾU THUÊ (HÀM BỔ SUNG MỚI) =====
+    public boolean xoaPhieuThue(String maHopDong) throws SQLException {
+        String sql = "DELETE FROM HOPDONGTHUEXE WHERE MaHopDong = ?";
+        
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, Integer.parseInt(maHopDong));
+            return ps.executeUpdate() > 0;
         }
     }
 }

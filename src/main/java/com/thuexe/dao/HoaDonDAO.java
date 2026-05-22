@@ -1,15 +1,19 @@
 package com.thuexe.dao;
 
-<<<<<<< HEAD
 import com.thuexe.dto.HoaDonDTO;
 import com.thuexe.util.DBConnection;
-import java.sql.CallableStatement;
+
 import java.sql.Connection;
-import java.sql.Date;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.Vector;
 
 public class HoaDonDAO {
 
+    // 1. HÀM THANH TOÁN (Giữ lại từ nhánh HEAD)
     public boolean thanhToan(HoaDonDTO hd) {
         if (hd == null || hd.getMaPhieuThue() == null || hd.getNgayThanhToan() == null) {
             return false;
@@ -21,7 +25,7 @@ public class HoaDonDAO {
              CallableStatement stmt = conn.prepareCall(sql)) {
 
             stmt.setInt(1, hd.getMaPhieuThue());
-            stmt.setDate(2, new Date(hd.getNgayThanhToan().getTime()));
+            stmt.setDate(2, new java.sql.Date(hd.getNgayThanhToan().getTime()));
             stmt.setDouble(3, hd.getPhiPhatSinh());
 
             stmt.execute();
@@ -30,25 +34,11 @@ public class HoaDonDAO {
             e.printStackTrace();
             return false;
         }
-=======
-import com.thuexe.util.DBConnection;
+    }
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-import java.util.Date;
-import java.util.Vector;
-
-public class HoaDonDAO {
-
-    public Vector<Vector<Object>> getThongKe(
-            Date tuNgay,
-            Date denNgay
-    ) {
-
-        Vector<Vector<Object>> data =
-                new Vector<>();
+    // 2. HÀM THỐNG KÊ (Giữ lại từ nhánh gộp để vẽ biểu đồ)
+    public Vector<Vector<Object>> getThongKe(Date tuNgay, Date denNgay) {
+        Vector<Vector<Object>> data = new Vector<>();
 
         String sql = """
             SELECT MaHD, NgHD, MaBB, TongTien
@@ -57,55 +47,26 @@ public class HoaDonDAO {
         """;
 
         try (
-                Connection conn =
-                        DBConnection.getConnection();
-
-                PreparedStatement ps =
-                        conn.prepareStatement(sql)
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)
         ) {
+            ps.setDate(1, new java.sql.Date(tuNgay.getTime()));
+            ps.setDate(2, new java.sql.Date(denNgay.getTime()));
 
-            ps.setDate(
-                    1,
-                    new java.sql.Date(
-                            tuNgay.getTime()
-                    )
-            );
-
-            ps.setDate(
-                    2,
-                    new java.sql.Date(
-                            denNgay.getTime()
-                    )
-            );
-
-            try (
-                    ResultSet rs =
-                            ps.executeQuery()
-            ) {
-
+            try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-
-                    Vector<Object> row =
-                            new Vector<>();
-
+                    Vector<Object> row = new Vector<>();
                     row.add(rs.getInt("MaHD"));
-
                     row.add(rs.getDate("NgHD"));
-
                     row.add(rs.getInt("MaBB"));
-
                     row.add(rs.getDouble("TongTien"));
-
                     data.add(row);
                 }
             }
-
         } catch (Exception e) {
-
             e.printStackTrace();
         }
 
         return data;
->>>>>>> 9b63c368eda659cd9ab800356939e8422f9a8bab
     }
 }
