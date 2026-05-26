@@ -11,7 +11,7 @@ public class FrmMain extends JFrame {
 
     // Các thành phần nút trên thanh Sidebar bên trái
     public JButton btnDashboard; 
-    private JButton btnXe, btnTraCuuXe, btnKhachHang, btnNhanVien; 
+    private JButton btnXe, btnTraCuuXe, btnKhachHang, btnNhanVien, btnHoSoNhanVien;
     private JButton btnLapPhieu, btnTraXe, btnThongKe, btnDangXuat;
     
     // Các nút chức năng dành riêng cho Role KhachHang
@@ -102,6 +102,7 @@ public class FrmMain extends JFrame {
         btnTraCuuXe = createSidebarButton("Tra cứu xe"); 
         btnKhachHang = createSidebarButton("Quản lý Khách hàng");
         btnNhanVien = createSidebarButton("Quản lý Nhân viên");
+        btnHoSoNhanVien = createSidebarButton("Hồ sơ cá nhân");
         btnDanhGiaMenu = createSidebarButton("Đóng góp ý kiến");
         btnLapPhieu = createSidebarButton("Lập Phiếu Thuê");
         btnTraXe = createSidebarButton("Trả Xe & Thanh Toán");
@@ -118,7 +119,9 @@ public class FrmMain extends JFrame {
         pnlSidebar.add(btnXe); pnlSidebar.add(Box.createVerticalStrut(8));
         pnlSidebar.add(btnTraCuuXe); pnlSidebar.add(Box.createVerticalStrut(8)); 
         pnlSidebar.add(btnKhachHang); pnlSidebar.add(Box.createVerticalStrut(8));
-        pnlSidebar.add(btnNhanVien); 
+        pnlSidebar.add(btnNhanVien);
+        pnlSidebar.add(Box.createVerticalStrut(8));
+        pnlSidebar.add(btnHoSoNhanVien); 
         
         // Khoảng đệm dưới nhóm quản lý
         strutAdmin = Box.createVerticalStrut(15);
@@ -171,6 +174,7 @@ public class FrmMain extends JFrame {
 
         if ("NhanVien".equalsIgnoreCase(role)) {
             // Hiển thị chức năng Nhân viên
+            btnHoSoNhanVien.setVisible(true);
             btnDashboard.setVisible(true);
             btnXe.setVisible(true);
             btnTraCuuXe.setVisible(true);  
@@ -195,6 +199,7 @@ public class FrmMain extends JFrame {
 
         } else if ("KhachHang".equalsIgnoreCase(role)) {
             // Ẩn toàn bộ chức năng nội bộ Admin/NhanVien
+            btnHoSoNhanVien.setVisible(false);
             btnDashboard.setVisible(false); 
             btnXe.setVisible(false);        
             btnTraCuuXe.setVisible(false); 
@@ -221,6 +226,7 @@ public class FrmMain extends JFrame {
 
         } else if ("Admin".equalsIgnoreCase(role)) {
             // Hiển thị toàn bộ nút quản lý và nghiệp vụ hệ thống
+            btnHoSoNhanVien.setVisible(true);
             btnDashboard.setVisible(true);
             btnXe.setVisible(true);
             btnTraCuuXe.setVisible(true);  
@@ -386,6 +392,7 @@ public class FrmMain extends JFrame {
     }
 
     private void setMenuButtonActive(JButton activeBtn) {
+        btnHoSoNhanVien.setBackground(COLOR_SIDEBAR);
         btnDanhGiaMenu.setBackground(COLOR_SIDEBAR); 
         btnDashboard.setBackground(COLOR_SIDEBAR);
         btnXe.setBackground(COLOR_SIDEBAR);
@@ -472,7 +479,31 @@ public class FrmMain extends JFrame {
                 JOptionPane.showMessageDialog(this, "Lỗi khi nạp màn hình Quản lý Nhân viên: " + ex.getMessage());
             }
         });
+       btnHoSoNhanVien.addActionListener(e -> {
 
+    setMenuButtonActive(btnHoSoNhanVien);
+
+    try {
+
+        pnlContentBody.removeAll();
+
+        FrmHoSoNhanVienPanel pnlHoSo =
+                new FrmHoSoNhanVienPanel();
+
+        pnlContentBody.add(pnlHoSo);
+
+        pnlContentBody.revalidate();
+
+        pnlContentBody.repaint();
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Lỗi khi nạp hồ sơ nhân viên: "
+                        + ex.getMessage());
+    }
+});
         btnLapPhieu.addActionListener(e -> {
             setMenuButtonActive(btnLapPhieu);
             try {
