@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.net.URL;
 
 public class FrmTraXe extends JPanel {
 
@@ -13,7 +14,10 @@ public class FrmTraXe extends JPanel {
     private JTextField txtBienSo, txtTenXe, txtNgayNhan, txtNgayTraThucTe;
     private JTextField txtTienThueGoc, txtPhiPhatSinh, txtTongThanhToan;
     private JButton btnXacNhanTra;
-    
+    private JButton btnXacNhanTra;
+    private JButton btnThanhToanQR;
+
+    private JLabel lblQRCode;
     private JLabel lblHoanTatValue, lblChuaHoanTatValue, lblDoanhThuValue;
 
     private static final Color COLOR_BG = new Color(245, 246, 248);
@@ -199,6 +203,56 @@ public class FrmTraXe extends JPanel {
         pnlThanhToan.add(txtTongThanhToan, gbcPay);
 
         pnlMainContent.add(pnlThanhToan);
+        // ==========================================================
+// VÙNG 3: QR THANH TOÁN
+// ==========================================================
+
+JPanel pnlQR = new JPanel(new BorderLayout());
+pnlQR.setBackground(Color.WHITE);
+
+pnlQR.setBorder(BorderFactory.createTitledBorder(
+        BorderFactory.createLineBorder(
+                new Color(210, 215, 225),
+                1,
+                true),
+        " Thanh toán QR động ",
+        0,
+        0,
+        FONT_TITLE_ZONE,
+        COLOR_TEXT_DARK));
+
+pnlQR.setPreferredSize(new Dimension(300, 350));
+
+lblQRCode = new JLabel(
+        "QR THANH TOÁN",
+        SwingConstants.CENTER);
+
+lblQRCode.setFont(
+        new Font("Segoe UI", Font.BOLD, 18));
+
+lblQRCode.setForeground(Color.GRAY);
+
+lblQRCode.setPreferredSize(
+        new Dimension(280, 280));
+
+btnThanhToanQR =
+        createStyledButton(
+                "Tạo mã QR thanh toán",
+                new Color(52, 152, 219));
+
+JPanel pnlQRBottom =
+        new JPanel(new FlowLayout(
+                FlowLayout.CENTER));
+
+pnlQRBottom.setBackground(Color.WHITE);
+
+pnlQRBottom.add(btnThanhToanQR);
+
+pnlQR.add(lblQRCode, BorderLayout.CENTER);
+pnlQR.add(pnlQRBottom, BorderLayout.SOUTH);
+
+pnlMainContent.add(Box.createVerticalStrut(20));
+pnlMainContent.add(pnlQR);
 
         // TÍNH NĂNG CUỘN
         JScrollPane scrMainScroll = new JScrollPane(pnlMainContent);
@@ -245,7 +299,79 @@ public class FrmTraXe extends JPanel {
                     xoaTrangForm();
                 }
             }
-        });
+        });// ==========================================================
+// SỰ KIỆN TẠO QR THANH TOÁN
+// ==========================================================
+
+btnThanhToanQR.addActionListener(e -> {
+
+    try {
+
+        String tongTienText =
+                txtTongThanhToan
+                        .getText()
+                        .replaceAll("[^\\d]", "");
+
+        if (tongTienText.isEmpty()) {
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Vui lòng tính tiền trước!");
+
+            return;
+        }
+
+        double tongTien =
+                Double.parseDouble(tongTienText);
+
+        String maPhieu =
+                cboMaPhieu.getSelectedItem()
+                        .toString();
+
+        // ==================================================
+        // THÔNG TIN VIETQR
+        // ==================================================
+
+        String bankID = "970415";
+
+        String accountNumber = "123456789";
+
+        String qrUrl =
+                "https://img.vietqr.io/image/"
+                        + bankID
+                        + "-"
+                        + accountNumber
+                        + "-compact2.jpg?amount="
+                        + (int) tongTien
+                        + "&addInfo=ThanhToan_"
+                        + maPhieu;
+
+        ImageIcon qrIcon =
+                new ImageIcon(new URL(qrUrl));
+
+        Image img =
+                qrIcon.getImage()
+                        .getScaledInstance(
+                                260,
+                                260,
+                                Image.SCALE_SMOOTH);
+
+        lblQRCode.setText("");
+
+        lblQRCode.setIcon(
+                new ImageIcon(img));
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Đã tạo mã QR thanh toán!");
+
+    } catch (Exception ex) {
+
+        JOptionPane.showMessageDialog(
+                this,
+                "Không thể tạo QR!");
+    }
+});
 
         // Nút Xác nhận thanh toán
         btnXacNhanTra.addActionListener(e -> {
@@ -303,6 +429,9 @@ public class FrmTraXe extends JPanel {
         txtTienThueGoc.setText("");
         txtPhiPhatSinh.setText("");
         txtTongThanhToan.setText("");
+        lblQRCode.setIcon(null);
+
+lblQRCode.setText("QR THANH TOÁN");
     }
 
     // Ô CHỈ ĐỌC (Dùng cho vùng Hóa đơn - Cấm sửa đổi hoàn toàn)
