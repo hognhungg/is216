@@ -95,3 +95,36 @@ public class NhanVienDAO {
         }
     }
 }
+public NhanVienDTO getProfileByMaChuThe(int maChuThe) {
+
+    String sql =
+            "SELECT * FROM NHANVIEN WHERE MaChuThe = ?";
+
+    try (
+            Connection conn = DBConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)
+    ) {
+
+        ps.setInt(1, maChuThe);
+
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+
+            return new NhanVienDTO(
+                    rs.getInt("MaNhanVien"),
+                    rs.getString("HoTenNV"),
+                    rs.getString("CCCD"),
+                    rs.getString("SDT"),
+                    rs.getString("Email"),
+                    rs.getInt("MaChuThe"),
+                    rs.getInt("MaDoanhNghiep")
+            );
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
