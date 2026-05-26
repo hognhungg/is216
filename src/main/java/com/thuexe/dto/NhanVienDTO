@@ -1,0 +1,71 @@
+package com.thuexe.dto;
+
+public class NhanVienDTO {
+
+    private int maNV;
+    private String hoTenNV;
+    private String chucVu;
+    private String phongBan;
+    private String sdt;
+    private String email;
+    private String ngayVaoLam;
+
+    public NhanVienDTO() {
+    }
+
+    public int getMaNV() {
+        return maNV;
+    }
+
+    public void setMaNV(int maNV) {
+        this.maNV = maNV;
+    }
+
+    public String getHoTenNV() {
+        return hoTenNV;
+    }
+
+    public void setHoTenNV(String hoTenNV) {
+        this.hoTenNV = hoTenNV;
+    }
+
+    public String getChucVu() {
+        return chucVu;
+    }
+
+    public void setChucVu(String chucVu) {
+        this.chucVu = chucVu;
+    }
+
+    public String getPhongBan() {
+        return phongBan;
+    }
+
+    public void setPhongBan(String phongBan) {
+        this.phongBan = phongBan;
+    }
+
+    public String getSdt() {
+        return sdt;
+    }
+
+    public void setSdt(String sdt) {
+        this.sdt = sdt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getNgayVaoLam() {
+        return ngayVaoLam;
+    }
+
+    public void setNgayVaoLam(String ngayVaoLam) {
+        this.ngayVaoLam = ngayVaoLam;
+    }
+}
