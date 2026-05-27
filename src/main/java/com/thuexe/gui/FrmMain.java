@@ -1,9 +1,21 @@
 package com.thuexe.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import com.thuexe.dto.TaiKhoanDTO;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
 
 public class FrmMain extends JFrame {
 
@@ -391,22 +403,55 @@ public class FrmMain extends JFrame {
         return btn;
     }
 
-    private void setMenuButtonActive(JButton activeBtn) {
-        btnHoSoNhanVien.setBackground(COLOR_SIDEBAR);
-        btnDanhGiaMenu.setBackground(COLOR_SIDEBAR); 
-        btnDashboard.setBackground(COLOR_SIDEBAR);
-        btnXe.setBackground(COLOR_SIDEBAR);
-        btnTraCuuXe.setBackground(COLOR_SIDEBAR); 
-        btnKhachHang.setBackground(COLOR_SIDEBAR);
-        btnNhanVien.setBackground(COLOR_SIDEBAR);
-        btnLapPhieu.setBackground(COLOR_SIDEBAR);
-        btnTraXe.setBackground(COLOR_SIDEBAR);
-        btnThongKe.setBackground(COLOR_SIDEBAR);
-        btnKhachDatXe.setBackground(COLOR_SIDEBAR);
-        btnChuyenDiCuaToi.setBackground(COLOR_SIDEBAR);
-        btnViVoucher.setBackground(COLOR_SIDEBAR);
+    private void initMenuBar() {
+        menuBar = new JMenuBar();
 
-        activeBtn.setBackground(COLOR_SIDEBAR_ACTIVE);
+        // Menu Hệ thống
+        menuHeThong = new JMenu("Hệ thống");
+        JMenuItem mnuHoSo = new JMenuItem("Xem hồ sơ cá nhân");
+        mnuDangXuat = new JMenuItem("Đăng xuất");
+        mnuThoat = new JMenuItem("Thoát");
+        menuHeThong.add(mnuDangXuat);
+        menuHeThong.addSeparator();
+        menuHeThong.add(mnuThoat);
+
+
+        // Menu Quản lý
+        menuQuanLy = new JMenu("Quản lý");
+        mnuXe = new JMenuItem("Quản lý Xe");
+        mnuLoaiXe = new JMenuItem("Quản lý Loại xe");
+        mnuKhachHang = new JMenuItem("Quản lý Khách hàng");
+        mnuNhanVien = new JMenuItem("Quản lý Nhân viên");
+        menuQuanLy.add(mnuXe);
+        menuQuanLy.add(mnuLoaiXe);
+        menuQuanLy.add(mnuKhachHang);
+        menuQuanLy.add(mnuNhanVien);
+
+        // Menu Nghiệp vụ
+        menuNghiepVu = new JMenu("Nghiệp vụ");
+        mnuLapPhieu = new JMenuItem("Lập Phiếu Thuê Xe"); // CHỨC NĂNG CHÍNH ÔNG VỪA LÀM
+        mnuTraXe = new JMenuItem("Trả Xe & Thanh Toán");
+        menuNghiepVu.add(mnuLapPhieu);
+        menuNghiepVu.add(mnuTraXe);
+
+        // Menu Thống kê
+        menuThongKe = new JMenu("Thống kê");
+        mnuBaoCao = new JMenuItem("Báo cáo doanh thu");
+        menuThongKe.add(mnuBaoCao);
+
+        // Lắp ráp vào MenuBar
+        menuBar.add(menuHeThong);
+        menuBar.add(menuQuanLy);
+        menuBar.add(menuNghiepVu);
+        menuBar.add(menuThongKe);
+        setJMenuBar(menuBar);
+
+        //Menu HoSoCaNhan
+        menuHeThong.add(mnuHoSo); 
+        menuHeThong.addSeparator();
+        menuHeThong.add(mnuDangXuat);
+        menuHeThong.addSeparator();
+        menuHeThong.add(mnuThoat);
     }
 
     private void initEvents() {
@@ -453,6 +498,31 @@ public class FrmMain extends JFrame {
                 JOptionPane.showMessageDialog(this, "Lỗi khi nạp màn hình Tra cứu xe: " + ex.getMessage());
             }
         });
+        
+        for (Component comp : menuHeThong.getMenuComponents()) {
+        if (comp instanceof JMenuItem && ((JMenuItem) comp).getText().equals("Xem hồ sơ cá nhân")) {
+            ((JMenuItem) comp).addActionListener(e -> {
+                if (this.tk != null) {
+                    // Bước 1: Làm sạch toàn bộ vùng hiển thị Content cũ ở trung tâm Frame
+                    getContentPane().removeAll(); 
+                    
+                    // Bước 2: Thiết lập lại cấu trúc Menu bar
+                    setJMenuBar(menuBar); 
+                    
+                    // Bước 3: Nạp Panel hồ sơ mới vào vùng BorderLayout.CENTER
+                    add(new PnlHoSoCaNhan(tk.getMaChuThe(), tk.getTenDangNhap(), tk.getVaiTro(), tk.getMatKhau()), BorderLayout.CENTER);
+                    
+                    // Bước 4: Tải lại thanh trạng thái Status Bar phía dưới cùng
+                    initStatusBar(); 
+                    
+                    // Bước 5: Yêu cầu Swing vẽ và hiển thị lại giao diện JFrame
+                    revalidate();
+                    repaint();
+                }
+            });
+        }
+    }
+    }
 
         btnKhachHang.addActionListener(e -> {
             setMenuButtonActive(btnKhachHang);
@@ -517,69 +587,38 @@ public class FrmMain extends JFrame {
             }        
         });
 
-        btnTraXe.addActionListener(e -> {
-            setMenuButtonActive(btnTraXe);
-            try {
-                pnlContentBody.removeAll();                
-                FrmTraXe pnlTraXe = new FrmTraXe();         
-                pnlContentBody.add(pnlTraXe);               
-                pnlContentBody.revalidate();                
-                pnlContentBody.repaint();                   
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi nạp màn hình Trả xe & Thanh toán: " + ex.getMessage());
-            }        
-        });
+    // Thêm hàm làm mới thanh trạng thái từ bất kỳ đâu
+public void refreshStatusBar() {
+    // Tìm và xóa panel status cũ nếu có
+    for (Component comp : getContentPane().getComponents()) {
+        if (comp instanceof JPanel && comp.getName() != null && comp.getName().equals("pnlStatus")) {
+            getContentPane().remove(comp);
+        }
+    }
+    
+    JPanel pnlStatus = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    pnlStatus.setName("pnlStatus"); // Đặt tên để dễ quản lý xóa/sửa
+    pnlStatus.setBorder(BorderFactory.createLoweredBevelBorder());
+    
+    String user = (tk != null) ? tk.getTenDangNhap() : "Guest";
+    String role = (tk != null) ? tk.getVaiTro() : "None";
+    
+    JLabel lblUser = new JLabel(" Người dùng: " + user + " | Quyền: " + role + " | Trạng thái: Hệ thống sẵn sàng");
+    lblUser.setFont(new Font("Tahoma", Font.PLAIN, 12));
+    pnlStatus.add(lblUser);
+    
+    add(pnlStatus, BorderLayout.SOUTH);
+    revalidate();
+    repaint();
+}
 
-        btnThongKe.addActionListener(e -> {
-            setMenuButtonActive(btnThongKe);
-            try {
-                pnlContentBody.removeAll(); 
-                FrmThongKe pnlThongKe = new FrmThongKe();   
-                pnlContentBody.add(pnlThongKe);            
-                pnlContentBody.revalidate();                
-                pnlContentBody.repaint();                   
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi nạp màn hình Báo cáo doanh thu: " + ex.getMessage());
-            }
-        });
-
-        btnKhachDatXe.addActionListener(e -> {
-            setMenuButtonActive(btnKhachDatXe);
-            showKhachDatXeContent();
-        });
-
-        btnChuyenDiCuaToi.addActionListener(e -> {
-            setMenuButtonActive(btnChuyenDiCuaToi);
-            pnlContentBody.removeAll();
-            JPanel pnlMock = new JPanel(new GridBagLayout());
-            pnlMock.setBackground(COLOR_BG_BODY);
-            JLabel lbl = new JLabel("Giao diện: Quản lý các xe đang thuê và xem lại lịch sử chuyến đi.");
-            lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
-            pnlMock.add(lbl);
-            pnlContentBody.add(pnlMock);
-            pnlContentBody.revalidate();
-            pnlContentBody.repaint();
-        });
-
-        btnViVoucher.addActionListener(e -> {
-            setMenuButtonActive(btnViVoucher);
-            pnlContentBody.removeAll();
-            JPanel pnlMock = new JPanel(new GridBagLayout());
-            pnlMock.setBackground(COLOR_BG_BODY);
-            JLabel lbl = new JLabel("Giao diện: Nơi lưu trữ danh sách mã giảm giá, Voucher khuyến mãi được tặng.");
-            lbl.setFont(new Font("Segoe UI", Font.BOLD, 16));
-            pnlMock.add(lbl);
-            pnlContentBody.add(pnlMock);
-            pnlContentBody.revalidate();
-            pnlContentBody.repaint();
-        });
-
-        btnDangXuat.addActionListener(e -> {
-            int verify = JOptionPane.showConfirmDialog(this, "Bạn chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-            if (verify == JOptionPane.YES_OPTION) {
-                this.dispose();
-                new FrmLogin().setVisible(true); 
-            }
-        });
+    private void phanQuyen() {
+        if (tk == null) return;
+        
+        // Nếu là Nhân viên, giới hạn các chức năng Admin
+        if (tk.getVaiTro().equalsIgnoreCase("NhanVien")) {
+            mnuNhanVien.setEnabled(false); // Vô hiệu hóa Quản lý nhân viên
+            menuThongKe.setVisible(false); // Ẩn luôn menu Thống kê
+        }
     }
 }

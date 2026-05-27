@@ -1,10 +1,14 @@
 package com.thuexe.dao;
 
-import com.thuexe.dto.KhachHangDTO;
-import com.thuexe.util.DBConnection;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.thuexe.dto.KhachHangDTO;
+import com.thuexe.util.DBConnection;
 
 public class KhachHangDAO {
     
@@ -58,14 +62,31 @@ public class KhachHangDAO {
             ps.setInt(8, kh.getMaKhachHang());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) { e.printStackTrace(); return false; }
+
+        
     }
 
-    public boolean delete(int maKhachHang) {
-        String sql = "DELETE FROM KHACHHANG WHERE MaKhachHang = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, maKhachHang);
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) { e.printStackTrace(); return false; }
+
+    // Tìm khách hàng theo mã chủ thể tài khoản
+public KhachHangDTO getByMaChuThe(int maChuThe) {
+    String sql = "SELECT * FROM KHACHHANG WHERE MaChuThe = ?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        ps.setInt(1, maChuThe);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return new KhachHangDTO(
+                    rs.getInt("MaKhachHang"), rs.getString("HoTen"),
+                    rs.getString("CCCD"), rs.getString("SoBangLai"),
+                    rs.getString("SDT"), rs.getString("GioiTinh"),
+                    rs.getDate("NgaySinh"), rs.getString("DiaChi"),
+                    rs.getInt("MaChuThe")
+                );
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return null;
+}
 }
