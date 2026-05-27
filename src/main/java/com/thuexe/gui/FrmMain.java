@@ -1,9 +1,21 @@
 package com.thuexe.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagLayout;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import com.thuexe.dto.TaiKhoanDTO;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 
 /**
  * FILE HOÀN CHỈNH: Giao diện chính sau khi Đăng nhập
@@ -54,11 +66,13 @@ public class FrmMain extends JFrame {
 
         // Menu Hệ thống
         menuHeThong = new JMenu("Hệ thống");
+        JMenuItem mnuHoSo = new JMenuItem("Xem hồ sơ cá nhân");
         mnuDangXuat = new JMenuItem("Đăng xuất");
         mnuThoat = new JMenuItem("Thoát");
         menuHeThong.add(mnuDangXuat);
         menuHeThong.addSeparator();
         menuHeThong.add(mnuThoat);
+
 
         // Menu Quản lý
         menuQuanLy = new JMenu("Quản lý");
@@ -89,6 +103,13 @@ public class FrmMain extends JFrame {
         menuBar.add(menuNghiepVu);
         menuBar.add(menuThongKe);
         setJMenuBar(menuBar);
+
+        //Menu HoSoCaNhan
+        menuHeThong.add(mnuHoSo); 
+        menuHeThong.addSeparator();
+        menuHeThong.add(mnuDangXuat);
+        menuHeThong.addSeparator();
+        menuHeThong.add(mnuThoat);
     }
 
     private void initEvents() {
@@ -117,7 +138,29 @@ public class FrmMain extends JFrame {
             JOptionPane.showMessageDialog(this, "Mở chức năng Quản lý xe");
         });
         
-        // Các chức năng khác làm tương tự...
+        for (Component comp : menuHeThong.getMenuComponents()) {
+        if (comp instanceof JMenuItem && ((JMenuItem) comp).getText().equals("Xem hồ sơ cá nhân")) {
+            ((JMenuItem) comp).addActionListener(e -> {
+                if (this.tk != null) {
+                    // Bước 1: Làm sạch toàn bộ vùng hiển thị Content cũ ở trung tâm Frame
+                    getContentPane().removeAll(); 
+                    
+                    // Bước 2: Thiết lập lại cấu trúc Menu bar
+                    setJMenuBar(menuBar); 
+                    
+                    // Bước 3: Nạp Panel hồ sơ mới vào vùng BorderLayout.CENTER
+                    add(new PnlHoSoCaNhan(tk.getMaChuThe(), tk.getTenDangNhap(), tk.getVaiTro(), tk.getMatKhau()), BorderLayout.CENTER);
+                    
+                    // Bước 4: Tải lại thanh trạng thái Status Bar phía dưới cùng
+                    initStatusBar(); 
+                    
+                    // Bước 5: Yêu cầu Swing vẽ và hiển thị lại giao diện JFrame
+                    revalidate();
+                    repaint();
+                }
+            });
+        }
+    }
     }
 
     private void initContent() {
@@ -140,6 +183,31 @@ public class FrmMain extends JFrame {
         pnlStatus.add(lblUser);
         add(pnlStatus, BorderLayout.SOUTH);
     }
+
+    // Thêm hàm làm mới thanh trạng thái từ bất kỳ đâu
+public void refreshStatusBar() {
+    // Tìm và xóa panel status cũ nếu có
+    for (Component comp : getContentPane().getComponents()) {
+        if (comp instanceof JPanel && comp.getName() != null && comp.getName().equals("pnlStatus")) {
+            getContentPane().remove(comp);
+        }
+    }
+    
+    JPanel pnlStatus = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    pnlStatus.setName("pnlStatus"); // Đặt tên để dễ quản lý xóa/sửa
+    pnlStatus.setBorder(BorderFactory.createLoweredBevelBorder());
+    
+    String user = (tk != null) ? tk.getTenDangNhap() : "Guest";
+    String role = (tk != null) ? tk.getVaiTro() : "None";
+    
+    JLabel lblUser = new JLabel(" Người dùng: " + user + " | Quyền: " + role + " | Trạng thái: Hệ thống sẵn sàng");
+    lblUser.setFont(new Font("Tahoma", Font.PLAIN, 12));
+    pnlStatus.add(lblUser);
+    
+    add(pnlStatus, BorderLayout.SOUTH);
+    revalidate();
+    repaint();
+}
 
     private void phanQuyen() {
         if (tk == null) return;
