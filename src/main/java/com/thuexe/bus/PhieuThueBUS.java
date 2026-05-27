@@ -26,7 +26,9 @@ public class PhieuThueBUS {
         return dao.layDonGiaNgay(bienSo);
     }
 
+    // ===== LẬP PHIẾU THUÊ MỚI =====
     public String lapPhieu(PhieuThueDTO p) throws Exception {
+        // Ràng buộc dữ liệu đầu vào (Validation)
         if (p.getMaKhachHang() == null || p.getMaKhachHang().isEmpty())
             throw new Exception("Vui lòng chọn khách hàng!");
         if (p.getBienSoXe() == null || p.getBienSoXe().isEmpty())
@@ -38,6 +40,29 @@ public class PhieuThueBUS {
 
         return dao.themPhieuThue(p);
     }
-}
 
-    
+    // ===== CẬP NHẬT/SỬA PHIẾU THUÊ =====
+    public boolean suaPhieu(PhieuThueDTO p, String maHopDong) throws Exception {
+        // Kiểm tra ràng buộc dữ liệu tương tự khi lập phiếu
+        if (maHopDong == null || maHopDong.trim().isEmpty())
+            throw new Exception("Không tìm thấy mã hợp đồng cần sửa!");
+        if (p.getMaKhachHang() == null || p.getMaKhachHang().isEmpty())
+            throw new Exception("Vui lòng chọn khách hàng!");
+        if (p.getBienSoXe() == null || p.getBienSoXe().isEmpty())
+            throw new Exception("Vui lòng chọn xe!");
+        if (p.getThoiGianTraXe().before(p.getThoiGianNhanXe()))
+            throw new Exception("Ngày trả phải sau ngày nhận!");
+            
+        // Gọi xuống tầng DAO để thực thi câu lệnh UPDATE SQL
+        return dao.capNhatPhieuThue(p, maHopDong);
+    }
+
+    // ===== HỦY/XÓA PHIẾU THUÊ =====
+    public boolean xoaPhieu(String maHopDong) throws Exception {
+        if (maHopDong == null || maHopDong.trim().isEmpty())
+            throw new Exception("Mã hợp đồng không hợp lệ để thực hiện xóa!");
+            
+        // Gọi xuống tầng DAO để thực thi câu lệnh DELETE SQL
+        return dao.xoaPhieuThue(maHopDong);
+    }
+}

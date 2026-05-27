@@ -1,3 +1,30 @@
+<<<<<<< HEAD
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\bus\KhachHangBUS.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\bus\LoaiXeBUS.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\bus\PhieuThueBUS.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\bus\TaiKhoanBUS.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dao\KhachHangDAO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dao\LoaiXeDAO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dao\PhieuThueDAO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dao\TaiKhoanDAO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dao\XeDAO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dto\KhachHangDTO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dto\LoaiXeDTO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dto\PhieuThueDTO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dto\TaiKhoanDTO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\dto\XeDTO.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmKhachHang.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmLapPhieuThue.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmLoaiXe.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmLogin.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmMain.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmNhanVien.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmQuanLyXe.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmTraCuuXe.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\quanlythuexe\QuanLyThueXe.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\util\DBConnection.java
+C:\Users\ASUS\Desktop\quan-ly-thue-xe\src\main\java\com\thuexe\util\ValidationUtil.java
+=======
 D:\quan-ly-thue-xe\src\main\java\com\thuexe\bus\KhachHangBUS.java
 D:\quan-ly-thue-xe\src\main\java\com\thuexe\bus\LoaiXeBUS.java
 D:\quan-ly-thue-xe\src\main\java\com\thuexe\bus\PhieuThueBUS.java
@@ -23,3 +50,4 @@ D:\quan-ly-thue-xe\src\main\java\com\thuexe\gui\FrmTraCuuXe.java
 D:\quan-ly-thue-xe\src\main\java\com\thuexe\quanlythuexe\QuanLyThueXe.java
 D:\quan-ly-thue-xe\src\main\java\com\thuexe\util\DBConnection.java
 D:\quan-ly-thue-xe\src\main\java\com\thuexe\util\ValidationUtil.java
+>>>>>>> origin/phương
